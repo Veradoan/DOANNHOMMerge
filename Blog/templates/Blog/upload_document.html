@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section>
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-9">
+                <div class="blog-post-area">
+
+                    <h2 class="title text-center">
+                        Upload Document
+                    </h2>
+
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-{{ message.tags }}">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+
+                    <form method="POST" enctype="multipart/form-data">
+
+                        {% csrf_token %}
+
+                        <div class="form-group">
+                            <label>Title</label>
+                            {{ form.title }}
+                            {{ form.title.errors }}
+                        </div>
+
+                        <div class="form-group">
+                            <label>Description</label>
+                            {{ form.description }}
+                            {{ form.description.errors }}
+                        </div>
+
+                        <div class="form-group">
+                            <label>Faculty</label>
+                            {{ form.faculty }}
+                            {{ form.faculty.errors }}
+                        </div>
+
+                        <div class="form-group">
+                            <label>Course</label>
+                            {{ form.course }}
+                            {{ form.course.errors }}
+                        </div>
+
+                        <div class="form-group">
+                            <label>Document Type</label>
+                            {{ form.doc_type }}
+                            {{ form.doc_type.errors }}
+                        </div>
+
+                        <div class="form-group">
+                            <label>File</label>
+                            {{ form.file }}
+                            {{ form.file.errors }}
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">
+                            Upload Document
+                        </button>
+
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<script>
+    document.getElementById('id_faculty').addEventListener('change', function () {
+        const facultyId = this.value;
+        const courseSelect = document.getElementById('id_course');
+
+        courseSelect.innerHTML = '<option value="">---------</option>';
+
+        if (!facultyId) {
+            return;
+        }
+
+        fetch(`/blog/get-courses/?faculty_id=${facultyId}`)
+            .then(response => response.json())
+            .then(data => {
+                data.forEach(course => {
+                    const option = document.createElement('option');
+                    option.value = course.id;
+                    option.textContent = course.name;
+                    courseSelect.appendChild(option);
+                });
+            });
+    });
+</script>
+{% endblock %}
